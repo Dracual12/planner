@@ -1,26 +1,171 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-medium: rgba(255, 255, 255, 0.07);
+  --bg-glass-heavy: rgba(255, 255, 255, 0.1);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-medium: rgba(255, 255, 255, 0.12);
+  --border-glass-heavy: rgba(255, 255, 255, 0.15);
+  --accent-neon: #7c5cfc;
+  --accent-neon-glow: rgba(124, 92, 252, 0.4);
+  --accent-cyan: #00e5ff;
+  --text-primary: #f0f0f0;
+  --text-secondary: #6b6b80;
+  --text-muted: #3e3e50;
+  --priority-high: #ff4d6a;
+  --priority-medium: #ffb84d;
+  --priority-low: #4dff91;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-accent: var(--accent-neon);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  overscroll-behavior: contain;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Animated gradient mesh background */
+.bg-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(124, 92, 252, 0.08), transparent),
+    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(0, 229, 255, 0.05), transparent),
+    radial-gradient(ellipse 70% 50% at 50% 80%, rgba(124, 92, 252, 0.06), transparent);
+  animation: mesh-shift 60s ease-in-out infinite;
+}
+
+@keyframes mesh-shift {
+  0%, 100% {
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 40%, rgba(124, 92, 252, 0.08), transparent),
+      radial-gradient(ellipse 60% 60% at 80% 20%, rgba(0, 229, 255, 0.05), transparent),
+      radial-gradient(ellipse 70% 50% at 50% 80%, rgba(124, 92, 252, 0.06), transparent);
+  }
+  33% {
+    background:
+      radial-gradient(ellipse 70% 60% at 60% 30%, rgba(124, 92, 252, 0.1), transparent),
+      radial-gradient(ellipse 80% 40% at 20% 70%, rgba(0, 229, 255, 0.06), transparent),
+      radial-gradient(ellipse 60% 50% at 80% 60%, rgba(124, 92, 252, 0.05), transparent);
+  }
+  66% {
+    background:
+      radial-gradient(ellipse 60% 50% at 40% 60%, rgba(124, 92, 252, 0.07), transparent),
+      radial-gradient(ellipse 70% 50% at 70% 50%, rgba(0, 229, 255, 0.07), transparent),
+      radial-gradient(ellipse 80% 60% at 30% 20%, rgba(124, 92, 252, 0.08), transparent);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Glassmorphic utilities */
+.glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+}
+
+.glass-medium {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: var(--bg-glass-medium);
+  border: 1px solid var(--border-glass-medium);
+}
+
+.glass-heavy {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-glass-heavy);
+  border: 1px solid var(--border-glass-heavy);
+}
+
+/* Neon glow utility */
+.neon-glow {
+  box-shadow: 0 0 20px var(--accent-neon-glow), 0 0 60px rgba(124, 92, 252, 0.15);
+}
+
+/* Subtle inner glow for active/focused elements */
+.inner-glow {
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(124, 92, 252, 0.15);
+}
+
+/* Neon pulse for badges/notifications */
+@keyframes neon-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--accent-neon-glow); }
+  50% { box-shadow: 0 0 16px var(--accent-neon-glow), 0 0 32px rgba(124, 92, 252, 0.2); }
+}
+.neon-pulse {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* Hide scrollbar but keep scrollable */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Minimum touch target for interactive elements */
+button, a, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Exception for inline/small UI elements that have adequate hit area via padding */
+.touch-target-sm {
+  min-height: unset;
+  min-width: unset;
+}
+
+/* Safe area padding for notch/home indicator */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Desktop max-width container */
+@media (min-width: 768px) {
+  .app-container {
+    max-width: 640px;
+    margin-inline: auto;
+  }
+}
+
+/* Tablet: 2-column task grid */
+@media (min-width: 768px) {
+  .task-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .bg-mesh {
+    animation: none;
+  }
 }

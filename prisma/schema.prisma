@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Task {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  priority    Priority    @default(MEDIUM)
+  date        String      // YYYY-MM-DD for easy filtering
+  time        String?     // HH:mm
+  duration    Int?        // minutes
+  completed   Boolean     @default(false)
+  tags        String[]    // PostgreSQL array
+  order       Int         @default(0)
+  reminder    DateTime?
+  reminderSent Boolean    @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  subtasks    Subtask[]
+  recurrence  Recurrence?
+}
+
+model Subtask {
+  id        String  @id @default(cuid())
+  title     String
+  completed Boolean @default(false)
+  order     Int     @default(0)
+  taskId    String
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Recurrence {
+  id        String @id @default(cuid())
+  frequency String // daily, weekly, monthly
+  interval  Int    @default(1)
+  days      Int[]  // day numbers (0=Sun, 1=Mon, etc.)
+  taskId    String @unique
+  task      Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
