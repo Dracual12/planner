@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
+import { X, ChevronDown, ChevronUp, Clock } from "lucide-react";
 import { format } from "date-fns";
 import type { Priority } from "@/types/task";
 import { useTaskStore } from "@/store/taskStore";
@@ -170,6 +170,17 @@ export function QuickAddModal({
                 className="rounded-lg bg-[var(--bg-glass)] px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none"
               />
 
+              {/* Time input — always visible */}
+              <div className="flex items-center gap-1">
+                <Clock size={12} className="text-[var(--text-muted)]" />
+                <input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="rounded-lg bg-[var(--bg-glass)] px-2 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none"
+                />
+              </div>
+
               {/* Priority selector */}
               <div className="flex gap-1">
                 {priorities.map((p) => (
@@ -219,13 +230,6 @@ export function QuickAddModal({
                   className="overflow-hidden"
                 >
                   <div className="mt-3 flex flex-col gap-2">
-                    <input
-                      type="time"
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      placeholder="Time"
-                      className="rounded-lg bg-[var(--bg-glass)] px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none"
-                    />
                     <input
                       value={tagsInput}
                       onChange={(e) => setTagsInput(e.target.value)}

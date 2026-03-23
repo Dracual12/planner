@@ -36,11 +36,19 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
     const container = scrollRef.current;
     if (!container) return;
 
+    // Disable smooth scrolling for initial positioning to prevent
+    // cascade: smooth scroll triggers handleScroll repeatedly,
+    // which keeps prepending days and scrolling further away.
+    container.style.scrollBehavior = "auto";
     const todayIndex = BATCH_SIZE;
     const cellWidth = 60;
     const scrollPosition =
       todayIndex * cellWidth - container.clientWidth / 2 + cellWidth / 2;
     container.scrollLeft = scrollPosition;
+    // Re-enable smooth scrolling after positioning
+    requestAnimationFrame(() => {
+      container.style.scrollBehavior = "";
+    });
   }, []);
 
   const handleScroll = useCallback(() => {
@@ -86,7 +94,7 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
     <div
       ref={scrollRef}
       onScroll={handleScroll}
-      className="scrollbar-hide flex gap-1 overflow-x-auto scroll-smooth py-2"
+      className="scrollbar-hide flex gap-1 overflow-x-auto py-2"
       style={{ scrollSnapType: "x proximity" }}
     >
       {days.map((day) => (

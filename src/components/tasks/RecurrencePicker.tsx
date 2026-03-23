@@ -8,6 +8,8 @@ const DAY_LABELS = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
 const presets: { label: string; rule: RecurrenceRule | null }[] = [
   { label: "Нет", rule: null },
   { label: "Ежедневно", rule: { frequency: "daily", interval: 1 } },
+  { label: "По будням", rule: { frequency: "weekly", interval: 1, days: [1, 2, 3, 4, 5] } },
+  { label: "По выходным", rule: { frequency: "weekly", interval: 1, days: [0, 6] } },
   { label: "Еженедельно", rule: { frequency: "weekly", interval: 1 } },
   { label: "Ежемесячно", rule: { frequency: "monthly", interval: 1 } },
 ];
@@ -22,7 +24,8 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
     ? presets.find(
         (p) =>
           p.rule?.frequency === value.frequency &&
-          p.rule?.interval === value.interval
+          p.rule?.interval === value.interval &&
+          JSON.stringify(p.rule?.days) === JSON.stringify(value.days)
       )
     : presets[0];
 
@@ -58,7 +61,8 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
             (value &&
               preset.rule &&
               value.frequency === preset.rule.frequency &&
-              value.interval === preset.rule.interval);
+              value.interval === preset.rule.interval &&
+              JSON.stringify(value.days) === JSON.stringify(preset.rule.days));
           return (
             <button
               key={preset.label}

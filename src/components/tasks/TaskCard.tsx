@@ -9,6 +9,7 @@ import { SubtaskProgress } from "./SubtaskProgress";
 import { TagChip } from "./TagChip";
 import { useTaskStore } from "@/store/taskStore";
 import { springSnappy } from "@/lib/animations";
+import { EditTaskModal } from "./EditTaskModal";
 
 interface TaskCardProps {
   task: Task;
@@ -35,14 +36,17 @@ export function TaskCard({ task }: TaskCardProps) {
   const [offsetX, setOffsetX] = useState(0);
   const [swiping, setSwiping] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const startX = useRef(0);
   const startY = useRef(0);
   const locked = useRef<"x" | "y" | null>(null);
+  const didSwipe = useRef(false);
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     startX.current = e.touches[0].clientX;
     startY.current = e.touches[0].clientY;
     locked.current = null;
+    didSwipe.current = false;
     setSwiping(false);
   }, []);
 
@@ -64,6 +68,7 @@ export function TaskCard({ task }: TaskCardProps) {
     const clamped = Math.min(0, dx);
     setOffsetX(clamped);
     setSwiping(true);
+    didSwipe.current = true;
   }, []);
 
   const onTouchEnd = useCallback(() => {
@@ -138,7 +143,12 @@ export function TaskCard({ task }: TaskCardProps) {
           </button>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
+          <div
+            className="flex-1 min-w-0 cursor-pointer"
+            onClick={() => {
+              if (!didSwipe.current) setEditOpen(true);
+            }}
+          >
             <div className="flex items-center gap-2">
               <span
                 className={`text-sm font-medium ${
@@ -198,6 +208,12 @@ export function TaskCard({ task }: TaskCardProps) {
           </button>
         </div>
       </motion.div>
+
+      <EditTaskModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        task={task}
+      />
     </div>
   );
 }
