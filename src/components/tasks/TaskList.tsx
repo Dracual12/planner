@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import { useTaskStore } from "@/store/taskStore";
@@ -15,9 +14,8 @@ interface TaskListProps {
 }
 
 export function TaskList({ selectedDate }: TaskListProps) {
-  const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
+  const tasks = useTaskStore((s) => s.getTasksByDate(format(selectedDate, "yyyy-MM-dd")));
   const dateKey = format(selectedDate, "yyyy-MM-dd");
-  const tasks = useMemo(() => getTasksByDate(dateKey), [getTasksByDate, dateKey]);
 
   if (tasks.length === 0) {
     return (

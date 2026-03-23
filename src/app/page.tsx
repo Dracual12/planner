@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import dynamic from "next/dynamic";
@@ -38,8 +38,7 @@ export default function TodayPage() {
 
   const dateLabel = format(selectedDate, "EEEE, d MMMM", { locale: ru });
   const dateKey = format(selectedDate, "yyyy-MM-dd");
-  const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
-  const tasks = useMemo(() => getTasksByDate(dateKey), [getTasksByDate, dateKey]);
+  const tasks = useTaskStore((s) => s.getTasksByDate(dateKey));
 
   return (
     <div className="flex flex-col gap-4">
