@@ -2,6 +2,7 @@
 
 import { Bell, BellOff } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
+import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 type ReminderOffset = "at-time" | "15min" | "1h" | "1day" | "none";
 
@@ -25,11 +26,14 @@ export function ReminderPicker({
   hasTime,
 }: ReminderPickerProps) {
   const { permission, requestPermission } = useNotifications();
+  const { subscribe } = usePushSubscription();
 
   const handleChange = async (offset: ReminderOffset) => {
     if (offset !== "none" && permission === "default") {
       const result = await requestPermission();
       if (result !== "granted") return;
+      // Register push subscription after granting permission
+      subscribe();
     }
     onChange(offset);
   };
