@@ -3,13 +3,13 @@
 import { Repeat } from "lucide-react";
 import type { RecurrenceRule } from "@/types/task";
 
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_LABELS = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
 
 const presets: { label: string; rule: RecurrenceRule | null }[] = [
-  { label: "None", rule: null },
-  { label: "Daily", rule: { frequency: "daily", interval: 1 } },
-  { label: "Weekly", rule: { frequency: "weekly", interval: 1 } },
-  { label: "Monthly", rule: { frequency: "monthly", interval: 1 } },
+  { label: "Нет", rule: null },
+  { label: "Ежедневно", rule: { frequency: "daily", interval: 1 } },
+  { label: "Еженедельно", rule: { frequency: "weekly", interval: 1 } },
+  { label: "Ежемесячно", rule: { frequency: "monthly", interval: 1 } },
 ];
 
 interface RecurrencePickerProps {
@@ -47,11 +47,10 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
           }
         />
         <span className="text-[10px] text-[var(--text-secondary)]">
-          Repeat
+          Повтор
         </span>
       </div>
 
-      {/* Frequency presets */}
       <div className="flex flex-wrap gap-1">
         {presets.map((preset) => {
           const isActive =
@@ -76,11 +75,10 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
         })}
       </div>
 
-      {/* Interval selector for non-preset values */}
       {value && (
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-[var(--text-secondary)]">
-            Every
+            Каждые
           </span>
           <input
             type="number"
@@ -94,15 +92,14 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
           />
           <span className="text-[10px] text-[var(--text-secondary)]">
             {value.frequency === "daily"
-              ? "day(s)"
+              ? "дн."
               : value.frequency === "weekly"
-                ? "week(s)"
-                : "month(s)"}
+                ? "нед."
+                : "мес."}
           </span>
         </div>
       )}
 
-      {/* Day picker for weekly */}
       {value?.frequency === "weekly" && (
         <div className="flex gap-1">
           {DAY_LABELS.map((label, i) => {

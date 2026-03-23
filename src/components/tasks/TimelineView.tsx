@@ -26,7 +26,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const SLOT_HEIGHT = 60; // px per hour
 
 function formatHour(h: number) {
-  return h === 0 ? "12 AM" : h < 12 ? `${h} AM` : h === 12 ? "12 PM" : `${h - 12} PM`;
+  return `${h.toString().padStart(2, "0")}:00`;
 }
 
 function TimeSlot({ hour }: { hour: number }) {
@@ -194,7 +194,7 @@ export function TimelineView({ tasks, dateKey }: TimelineViewProps) {
           <div className="mb-1.5 flex items-center gap-1.5">
             <Clock size={12} className="text-[var(--text-muted)]" />
             <span className="text-[10px] text-[var(--text-secondary)]">
-              Unscheduled — drag to a time slot
+              Без времени — перетащите на слот
             </span>
           </div>
           <div className="flex flex-col gap-1.5">

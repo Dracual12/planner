@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { List, Clock } from "lucide-react";
@@ -35,7 +36,7 @@ export default function TodayPage() {
     localStorage.setItem("calendarView", calendarView);
   }, [calendarView]);
 
-  const dateLabel = format(selectedDate, "EEEE, MMMM d");
+  const dateLabel = format(selectedDate, "EEEE, d MMMM", { locale: ru });
   const dateKey = format(selectedDate, "yyyy-MM-dd");
   const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
   const tasks = useMemo(() => getTasksByDate(dateKey), [getTasksByDate, dateKey]);
@@ -95,7 +96,7 @@ export default function TodayPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-medium text-[var(--text-secondary)]">
-            Tasks
+            Задачи
           </h2>
           {/* List / Timeline toggle */}
           <div className="flex rounded-lg bg-[var(--bg-glass)] p-0.5">
@@ -108,7 +109,7 @@ export default function TodayPage() {
               }`}
             >
               <List size={12} />
-              List
+              Список
             </button>
             <button
               onClick={() => setTaskView("timeline")}
@@ -119,7 +120,7 @@ export default function TodayPage() {
               }`}
             >
               <Clock size={12} />
-              Timeline
+              Таймлайн
             </button>
           </div>
         </div>

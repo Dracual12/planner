@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
 const tabs = [
-  { href: "/", icon: CalendarDays, label: "Today" },
-  { href: "/tasks", icon: CheckSquare, label: "Tasks" },
-  { href: "/settings", icon: Settings, label: "Settings" },
+  { href: "/", icon: CalendarDays, label: "Сегодня" },
+  { href: "/tasks", icon: CheckSquare, label: "Задачи" },
+  { href: "/settings", icon: Settings, label: "Настройки" },
 ] as const;
 
 export function BottomNav({ onQuickAdd }: { onQuickAdd: () => void }) {

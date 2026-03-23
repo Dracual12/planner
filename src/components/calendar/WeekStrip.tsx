@@ -10,8 +10,10 @@ import {
   isToday,
   format,
 } from "date-fns";
+import { ru } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTaskStore } from "@/store/taskStore";
 
 interface WeekStripProps {
   selectedDate: Date;
@@ -27,6 +29,7 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
     startOfWeek(selectedDate, { weekStartsOn: 1 })
   );
   const [direction, setDirection] = useState(0);
+  const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
 
   const weekDays = getWeekDays(currentWeekStart);
 
@@ -49,7 +52,6 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Week header with navigation */}
       <div className="flex items-center justify-between px-1">
         <button
           onClick={goToPrevWeek}
@@ -58,7 +60,7 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
           <ChevronLeft size={18} className="text-[var(--text-secondary)]" />
         </button>
         <span className="text-xs font-medium text-[var(--text-secondary)]">
-          {format(currentWeekStart, "MMM yyyy")}
+          {format(currentWeekStart, "LLLL yyyy", { locale: ru })}
         </span>
         <button
           onClick={goToNextWeek}
@@ -68,7 +70,6 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
         </button>
       </div>
 
-      {/* Week days grid */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={currentWeekStart.toISOString()}
@@ -82,6 +83,7 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
             const isSelected =
               startOfDay(selectedDate).getTime() === startOfDay(day).getTime();
             const today = isToday(day);
+            const hasTasks = getTasksByDate(format(day, "yyyy-MM-dd")).length > 0;
 
             return (
               <button
@@ -96,7 +98,7 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
                       : "text-[var(--text-secondary)]"
                   }`}
                 >
-                  {format(day, "EEE")}
+                  {format(day, "EEEEEE", { locale: ru })}
                 </span>
                 <span
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${
@@ -109,6 +111,9 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
                 >
                   {format(day, "d")}
                 </span>
+                {hasTasks && !isSelected && (
+                  <div className="absolute bottom-0.5 h-1 w-1 rounded-full bg-[var(--accent-neon)]" />
+                )}
                 {isSelected && (
                   <motion.div
                     layoutId="week-selected"

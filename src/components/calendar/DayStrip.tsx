@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { addDays, subDays, startOfDay } from "date-fns";
+import { addDays, subDays, startOfDay, format } from "date-fns";
 import { DayCell } from "./DayCell";
+import { useTaskStore } from "@/store/taskStore";
 
 interface DayStripProps {
   selectedDate: Date;
@@ -25,20 +26,19 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
     generateDays(new Date(), BATCH_SIZE, BATCH_SIZE)
   );
   const isLoadingRef = useRef(false);
+  const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
 
-  // Scroll to selected date on mount
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
 
-    const todayIndex = BATCH_SIZE; // center of initial array
-    const cellWidth = 60; // approximate cell width
+    const todayIndex = BATCH_SIZE;
+    const cellWidth = 60;
     const scrollPosition =
       todayIndex * cellWidth - container.clientWidth / 2 + cellWidth / 2;
     container.scrollLeft = scrollPosition;
   }, []);
 
-  // Infinite scroll: prepend/append days when near edges
   const handleScroll = useCallback(() => {
     const container = scrollRef.current;
     if (!container || isLoadingRef.current) return;
@@ -46,7 +46,6 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
     const { scrollLeft, scrollWidth, clientWidth } = container;
     const threshold = 200;
 
-    // Near left edge → prepend days
     if (scrollLeft < threshold) {
       isLoadingRef.current = true;
       const firstDay = days[0];
@@ -58,7 +57,6 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
 
       setDays((prev) => [...newDays, ...prev]);
 
-      // Maintain scroll position after prepend
       requestAnimationFrame(() => {
         if (container) {
           container.scrollLeft += newDays.length * 60;
@@ -67,7 +65,6 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
       });
     }
 
-    // Near right edge → append days
     if (scrollLeft + clientWidth > scrollWidth - threshold) {
       isLoadingRef.current = true;
       const lastDay = days[days.length - 1];
@@ -95,6 +92,7 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
           selected={
             startOfDay(selectedDate).getTime() === day.getTime()
           }
+          hasTasks={getTasksByDate(format(day, "yyyy-MM-dd")).length > 0}
           onSelect={onSelectDate}
         />
       ))}

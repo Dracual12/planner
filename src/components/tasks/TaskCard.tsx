@@ -90,7 +90,7 @@ export function TaskCard({ task }: TaskCardProps) {
               <Clock size={11} className="text-[var(--text-secondary)]" />
               <span className="text-[11px] text-[var(--text-secondary)]">
                 {task.time}
-                {task.duration && ` · ${task.duration}min`}
+                {task.duration && ` · ${task.duration} мин`}
               </span>
             </div>
           )}

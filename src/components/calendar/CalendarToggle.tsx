@@ -27,7 +27,7 @@ export function CalendarToggle({ view, onToggle }: CalendarToggleProps) {
             : "text-[var(--text-secondary)]"
         }`}
       >
-        Day
+        День
       </button>
       <button
         onClick={() => onToggle("week")}
@@ -37,7 +37,7 @@ export function CalendarToggle({ view, onToggle }: CalendarToggleProps) {
             : "text-[var(--text-secondary)]"
         }`}
       >
-        Week
+        Неделя
       </button>
     </div>
   );

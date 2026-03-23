@@ -6,7 +6,7 @@ import { SyncStatus } from "@/components/ui/SyncStatus";
 
 export function Header() {
   const today = new Date();
-  const formatted = today.toLocaleDateString("en-US", {
+  const formatted = today.toLocaleDateString("ru-RU", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -16,7 +16,7 @@ export function Header() {
     <header className="glass safe-area-top relative z-20 flex items-center justify-between px-4 py-3">
       <div>
         <h1 className="text-lg font-semibold text-[var(--text-primary)]">
-          Planner
+          Планировщик
         </h1>
         <p className="text-xs text-[var(--text-secondary)]">{formatted}</p>
       </div>

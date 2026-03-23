@@ -6,11 +6,11 @@ import { useNotifications } from "@/hooks/useNotifications";
 type ReminderOffset = "at-time" | "15min" | "1h" | "1day" | "none";
 
 const options: { value: ReminderOffset; label: string }[] = [
-  { value: "none", label: "No reminder" },
-  { value: "at-time", label: "At time" },
-  { value: "15min", label: "15 min before" },
-  { value: "1h", label: "1 hour before" },
-  { value: "1day", label: "1 day before" },
+  { value: "none", label: "Без напоминания" },
+  { value: "at-time", label: "В момент" },
+  { value: "15min", label: "За 15 мин" },
+  { value: "1h", label: "За 1 час" },
+  { value: "1day", label: "За 1 день" },
 ];
 
 interface ReminderPickerProps {
@@ -43,7 +43,7 @@ export function ReminderPicker({
           <Bell size={12} className="text-[var(--accent-neon)]" />
         )}
         <span className="text-[10px] text-[var(--text-secondary)]">
-          Reminder
+          Напоминание
         </span>
       </div>
       <div className="flex flex-wrap gap-1">
@@ -65,7 +65,7 @@ export function ReminderPicker({
       </div>
       {permission === "denied" && (
         <p className="text-[9px] text-[var(--priority-high)]">
-          Notifications blocked. Enable in browser settings.
+          Уведомления заблокированы. Включите в настройках браузера.
         </p>
       )}
     </div>

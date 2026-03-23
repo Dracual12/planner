@@ -1,6 +1,7 @@
 "use client";
 
-import { format, isToday, isSameDay } from "date-fns";
+import { format, isToday } from "date-fns";
+import { ru } from "date-fns/locale";
 import { motion } from "framer-motion";
 
 interface DayCellProps {
@@ -27,7 +28,7 @@ export function DayCell({ date, selected, hasTasks, onSelect }: DayCellProps) {
               : "text-[var(--text-secondary)]"
         }`}
       >
-        {format(date, "EEE")}
+        {format(date, "EEEEEE", { locale: ru })}
       </span>
 
       <span
@@ -45,7 +46,7 @@ export function DayCell({ date, selected, hasTasks, onSelect }: DayCellProps) {
       {/* Month label on 1st of month */}
       {date.getDate() === 1 && (
         <span className="text-[8px] font-medium text-[var(--accent-cyan)]">
-          {format(date, "MMM")}
+          {format(date, "MMM", { locale: ru })}
         </span>
       )}
 

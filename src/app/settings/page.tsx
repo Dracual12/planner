@@ -28,32 +28,32 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-2xl font-semibold text-[var(--text-primary)]">
-        Settings
+        Настройки
       </h2>
 
       {/* Stats */}
       <div className="glass rounded-2xl p-4">
         <h3 className="mb-3 text-xs font-medium uppercase text-[var(--text-secondary)]">
-          Overview
+          Обзор
         </h3>
         <div className="grid grid-cols-3 gap-3 text-center">
           <div>
             <p className="text-2xl font-bold text-[var(--text-primary)]">
               {tasks.length}
             </p>
-            <p className="text-[10px] text-[var(--text-secondary)]">Total</p>
+            <p className="text-[10px] text-[var(--text-secondary)]">Всего</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-[var(--accent-neon)]">
               {pendingCount}
             </p>
-            <p className="text-[10px] text-[var(--text-secondary)]">Pending</p>
+            <p className="text-[10px] text-[var(--text-secondary)]">В работе</p>
           </div>
           <div>
             <p className="text-2xl font-bold text-[var(--priority-low)]">
               {completedCount}
             </p>
-            <p className="text-[10px] text-[var(--text-secondary)]">Done</p>
+            <p className="text-[10px] text-[var(--text-secondary)]">Готово</p>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function SettingsPage() {
       {/* Cloud Sync */}
       <div className="glass rounded-2xl p-4">
         <h3 className="mb-3 text-xs font-medium uppercase text-[var(--text-secondary)]">
-          Cloud Sync
+          Облачная синхронизация
         </h3>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -72,12 +72,12 @@ export default function SettingsPage() {
             )}
             <div>
               <p className="text-sm text-[var(--text-primary)]">
-                {useApi ? "Connected" : "Offline mode"}
+                {useApi ? "Подключено" : "Офлайн режим"}
               </p>
               <p className="text-[10px] text-[var(--text-secondary)]">
                 {useApi
-                  ? `Status: ${syncStatus}`
-                  : "Data stored locally"}
+                  ? `Статус: ${syncStatus}`
+                  : "Данные хранятся локально"}
               </p>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function SettingsPage() {
         </div>
         {useApi && (
           <p className="mt-2 text-[9px] text-[var(--text-muted)]">
-            Requires DATABASE_URL in .env and running PostgreSQL.
+            Требуется DATABASE_URL в .env и работающий PostgreSQL.
           </p>
         )}
       </div>
@@ -104,7 +104,7 @@ export default function SettingsPage() {
       {/* Notifications */}
       <div className="glass rounded-2xl p-4">
         <h3 className="mb-3 text-xs font-medium uppercase text-[var(--text-secondary)]">
-          Notifications
+          Уведомления
         </h3>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -116,17 +116,17 @@ export default function SettingsPage() {
             <div>
               <p className="text-sm text-[var(--text-primary)]">
                 {!supported
-                  ? "Not supported"
+                  ? "Не поддерживается"
                   : permission === "granted"
-                    ? "Enabled"
+                    ? "Включены"
                     : permission === "denied"
-                      ? "Blocked"
-                      : "Not enabled"}
+                      ? "Заблокированы"
+                      : "Не включены"}
               </p>
               <p className="text-[10px] text-[var(--text-secondary)]">
                 {permission === "denied"
-                  ? "Enable in browser settings"
-                  : "Task reminders via browser notifications"}
+                  ? "Включите в настройках браузера"
+                  : "Напоминания через уведомления браузера"}
               </p>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
               onClick={requestPermission}
               className="rounded-lg bg-[var(--accent-neon)] px-3 py-1.5 text-xs font-medium text-white"
             >
-              Enable
+              Включить
             </button>
           )}
         </div>
@@ -144,17 +144,17 @@ export default function SettingsPage() {
       {/* Danger zone */}
       <div className="glass rounded-2xl border-[var(--priority-high)]/20 p-4">
         <h3 className="mb-3 text-xs font-medium uppercase text-[var(--priority-high)]">
-          Danger Zone
+          Опасная зона
         </h3>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Trash2 size={20} className="text-[var(--priority-high)]" />
             <div>
               <p className="text-sm text-[var(--text-primary)]">
-                Clear all data
+                Очистить все данные
               </p>
               <p className="text-[10px] text-[var(--text-secondary)]">
-                Delete all {tasks.length} tasks from local storage
+                Удалить все {tasks.length} задач из локального хранилища
               </p>
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function SettingsPage() {
                 : "bg-[var(--priority-high)]/10 text-[var(--priority-high)]"
             }`}
           >
-            {confirmClear ? "Confirm" : "Clear"}
+            {confirmClear ? "Подтвердить" : "Очистить"}
           </button>
         </div>
       </div>
@@ -174,10 +174,10 @@ export default function SettingsPage() {
       {/* About */}
       <div className="glass rounded-2xl p-4">
         <h3 className="mb-2 text-xs font-medium uppercase text-[var(--text-secondary)]">
-          About
+          О приложении
         </h3>
         <p className="text-xs text-[var(--text-muted)]">
-          Planner PWA v1.0 — Dark neon glassmorphic personal planner.
+          Планировщик PWA v1.0 — Персональный планировщик в стиле dark neon glass.
         </p>
       </div>
     </div>

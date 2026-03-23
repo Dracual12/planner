@@ -140,7 +140,7 @@ export function QuickAddModal({
             {/* Header */}
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-[var(--text-primary)]">
-                Quick Add
+                Быстрое добавление
               </h3>
               <button
                 onClick={onClose}
@@ -156,7 +156,7 @@ export function QuickAddModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Task name... (#tag !h tomorrow)"
+              placeholder="Название задачи... (#тег !h завтра)"
               className="w-full rounded-xl bg-[var(--bg-glass)] px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:inner-glow"
             />
 
@@ -199,7 +199,7 @@ export function QuickAddModal({
                 onClick={() => setShowMore(!showMore)}
                 className="ml-auto flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-glass)]"
               >
-                More
+                Ещё
                 {showMore ? (
                   <ChevronUp size={14} />
                 ) : (
@@ -229,13 +229,13 @@ export function QuickAddModal({
                     <input
                       value={tagsInput}
                       onChange={(e) => setTagsInput(e.target.value)}
-                      placeholder="Tags (comma separated)"
+                      placeholder="Теги (через запятую)"
                       className="rounded-lg bg-[var(--bg-glass)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
                     />
                     <textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Notes..."
+                      placeholder="Заметки..."
                       rows={2}
                       className="rounded-lg bg-[var(--bg-glass)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none resize-none"
                     />
@@ -259,7 +259,7 @@ export function QuickAddModal({
               disabled={!title.trim()}
               className="mt-3 w-full rounded-xl bg-[var(--accent-neon)] py-2.5 text-sm font-semibold text-white transition-all hover:neon-glow disabled:opacity-30"
             >
-              Add Task
+              Добавить
             </button>
           </motion.div>
         </>

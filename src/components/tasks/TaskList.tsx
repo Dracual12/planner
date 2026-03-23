@@ -23,7 +23,7 @@ export function TaskList({ selectedDate }: TaskListProps) {
     return (
       <div className="glass rounded-2xl p-6 text-center">
         <p className="text-sm text-[var(--text-muted)]">
-          No tasks for this day. Tap + to add one.
+          Нет задач на этот день. Нажмите +, чтобы добавить.
         </p>
       </div>
     );

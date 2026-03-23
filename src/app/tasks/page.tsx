@@ -16,6 +16,18 @@ const priorityOrder: Record<Priority, number> = {
   low: 2,
 };
 
+const priorityLabels: Record<Priority, string> = {
+  high: "Высокий",
+  medium: "Средний",
+  low: "Низкий",
+};
+
+const sortLabels: Record<SortMode, string> = {
+  date: "дата",
+  priority: "приоритет",
+  name: "имя",
+};
+
 export default function TasksPage() {
   const tasks = useTaskStore((s) => s.tasks);
   const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -23,14 +35,12 @@ export default function TasksPage() {
   const [showCompleted, setShowCompleted] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>("date");
 
-  // Collect all unique tags
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
     tasks.forEach((t) => t.tags.forEach((tag) => tagSet.add(tag)));
     return Array.from(tagSet).sort();
   }, [tasks]);
 
-  // Filter and sort
   const filtered = useMemo(() => {
     let result = tasks.filter((t) => {
       if (!showCompleted && t.completed) return false;
@@ -62,17 +72,15 @@ export default function TasksPage() {
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-semibold text-[var(--text-primary)]">
-        All Tasks
+        Все задачи
       </h2>
 
-      {/* Filters */}
       <div className="glass rounded-2xl p-3">
         <div className="flex items-center gap-2 mb-2">
           <Filter size={14} className="text-[var(--text-secondary)]" />
-          <span className="text-xs text-[var(--text-secondary)]">Filter</span>
+          <span className="text-xs text-[var(--text-secondary)]">Фильтр</span>
         </div>
 
-        {/* Tag chips */}
         {allTags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-2">
             {allTags.map((tag) => (
@@ -91,7 +99,6 @@ export default function TasksPage() {
           </div>
         )}
 
-        {/* Priority filter + sort + completed toggle */}
         <div className="flex items-center gap-2 flex-wrap">
           {(["high", "medium", "low"] as Priority[]).map((p) => (
             <button
@@ -109,12 +116,11 @@ export default function TasksPage() {
                 backgroundColor: `color-mix(in srgb, var(--priority-${p}) 15%, transparent)`,
               }}
             >
-              {p.charAt(0).toUpperCase() + p.slice(1)}
+              {priorityLabels[p]}
             </button>
           ))}
 
           <div className="ml-auto flex items-center gap-2">
-            {/* Sort */}
             <button
               onClick={() =>
                 setSortMode((m) =>
@@ -124,10 +130,9 @@ export default function TasksPage() {
               className="touch-target-sm flex items-center gap-1 rounded-lg bg-[var(--bg-glass)] px-2 py-1 text-[10px] text-[var(--text-secondary)]"
             >
               <SortAsc size={12} />
-              {sortMode}
+              {sortLabels[sortMode]}
             </button>
 
-            {/* Show completed */}
             <button
               onClick={() => setShowCompleted(!showCompleted)}
               className={`touch-target-sm rounded-lg px-2 py-1 text-[10px] transition-colors ${
@@ -136,26 +141,24 @@ export default function TasksPage() {
                   : "bg-[var(--bg-glass)] text-[var(--text-secondary)]"
               }`}
             >
-              {showCompleted ? `Done (${completedCount})` : "Show done"}
+              {showCompleted ? `Готово (${completedCount})` : "Показать готовые"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Task count */}
       <p className="text-xs text-[var(--text-secondary)]">
-        {filtered.length} task{filtered.length !== 1 ? "s" : ""}
-        {activeTag ? ` tagged #${activeTag}` : ""}
-        {activePriority ? ` · ${activePriority} priority` : ""}
+        {filtered.length} {filtered.length === 1 ? "задача" : filtered.length < 5 ? "задачи" : "задач"}
+        {activeTag ? ` с тегом #${activeTag}` : ""}
+        {activePriority ? ` · ${priorityLabels[activePriority].toLowerCase()}` : ""}
       </p>
 
-      {/* Task list */}
       {filtered.length === 0 ? (
         <div className="glass rounded-2xl p-6 text-center">
           <p className="text-sm text-[var(--text-muted)]">
             {tasks.length === 0
-              ? "No tasks yet. Tap + to create one."
-              : "No tasks match your filters."}
+              ? "Задач пока нет. Нажмите +, чтобы создать."
+              : "Нет задач, подходящих под фильтры."}
           </p>
         </div>
       ) : (
