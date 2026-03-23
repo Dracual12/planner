@@ -5,7 +5,6 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
-  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -17,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { AnimatePresence, motion } from "framer-motion";
+import { GripVertical } from "lucide-react";
 import type { Task } from "@/types/task";
 import { TaskCard } from "./TaskCard";
 import { useTaskStore } from "@/store/taskStore";
@@ -45,8 +45,16 @@ function SortableTaskItem({ task }: { task: Task }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} {...attributes} className="relative">
       <TaskCard task={task} />
+      {/* Drag handle — only this element activates dnd-kit */}
+      <button
+        {...listeners}
+        className="absolute right-1 top-1/2 -translate-y-1/2 touch-none rounded-md p-1 opacity-0 transition-opacity group-hover:opacity-60 hover:opacity-100 active:opacity-100"
+        aria-label="Перетащить"
+      >
+        <GripVertical size={14} className="text-[var(--text-muted)]" />
+      </button>
     </div>
   );
 }
@@ -57,9 +65,6 @@ export function SortableTaskList({ tasks, dateKey }: SortableTaskListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 200, tolerance: 5 },
     })
   );
 
