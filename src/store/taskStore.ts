@@ -2,11 +2,56 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Task, CreateTaskInput, Subtask } from "@/types/task";
+import type { Task, CreateTaskInput, Subtask, RecurrenceRule } from "@/types/task";
 import * as api from "@/lib/api/tasks";
 
 function generateId() {
   return crypto.randomUUID();
+}
+
+/** Check if a recurring task should appear on the given date */
+function matchesRecurrence(
+  taskDate: string,
+  targetDate: string,
+  rule: RecurrenceRule
+): boolean {
+  const start = new Date(taskDate + "T00:00:00");
+  const target = new Date(targetDate + "T00:00:00");
+
+  // Only future or same-day occurrences
+  if (target < start) return false;
+
+  const diffMs = target.getTime() - start.getTime();
+  const diffDays = Math.round(diffMs / 86400000);
+
+  if (rule.frequency === "daily") {
+    return diffDays % rule.interval === 0;
+  }
+
+  if (rule.frequency === "weekly") {
+    const diffWeeks = diffDays / 7;
+    if (diffWeeks % rule.interval !== 0 && !rule.days) return false;
+    if (rule.days && rule.days.length > 0) {
+      // Check if target's day-of-week is in the specified days
+      const dow = target.getDay();
+      if (!rule.days.includes(dow)) return false;
+      // Check the week interval
+      const weeksDiff = Math.floor(diffDays / 7);
+      return weeksDiff % rule.interval === 0;
+    }
+    // No specific days: repeat on the same weekday
+    return diffDays % (7 * rule.interval) === 0;
+  }
+
+  if (rule.frequency === "monthly") {
+    const monthsDiff =
+      (target.getFullYear() - start.getFullYear()) * 12 +
+      (target.getMonth() - start.getMonth());
+    if (monthsDiff < 0 || monthsDiff % rule.interval !== 0) return false;
+    return target.getDate() === start.getDate();
+  }
+
+  return false;
 }
 
 type SyncStatus = "synced" | "syncing" | "error" | "offline";
@@ -51,14 +96,40 @@ export const useTaskStore = create<TaskStore>()(
       setSyncStatus: (status) => set({ syncStatus: status }),
 
       getTasksByDate: (date: string) => {
-        return get()
-          .tasks.filter((t) => t.date === date)
-          .sort((a, b) => {
-            if (a.time && b.time) return a.time.localeCompare(b.time);
-            if (a.time) return -1;
-            if (b.time) return 1;
-            return 0;
-          });
+        const allTasks = get().tasks;
+        const result: Task[] = [];
+        const seenIds = new Set<string>();
+
+        for (const t of allTasks) {
+          // Exact date match
+          if (t.date === date) {
+            if (!seenIds.has(t.id)) {
+              result.push(t);
+              seenIds.add(t.id);
+            }
+            continue;
+          }
+
+          // Recurring task: check if it should appear on this date
+          if (
+            t.recurrence &&
+            !t.completed &&
+            matchesRecurrence(t.date, date, t.recurrence)
+          ) {
+            if (!seenIds.has(t.id)) {
+              // Create a virtual instance with the target date
+              result.push({ ...t, date, completed: false });
+              seenIds.add(t.id);
+            }
+          }
+        }
+
+        return result.sort((a, b) => {
+          if (a.time && b.time) return a.time.localeCompare(b.time);
+          if (a.time) return -1;
+          if (b.time) return 1;
+          return 0;
+        });
       },
 
       loadFromApi: async (date: string) => {
