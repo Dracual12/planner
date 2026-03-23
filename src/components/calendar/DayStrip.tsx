@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useReducer } from "react";
 import { addDays, subDays, startOfDay, format } from "date-fns";
 import { DayCell } from "./DayCell";
 import { useTaskStore } from "@/store/taskStore";
@@ -26,7 +26,11 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
     generateDays(new Date(), BATCH_SIZE, BATCH_SIZE)
   );
   const isLoadingRef = useRef(false);
-  const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
+
+  useEffect(() => {
+    return useTaskStore.subscribe(forceUpdate);
+  }, []);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -92,7 +96,7 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
           selected={
             startOfDay(selectedDate).getTime() === day.getTime()
           }
-          hasTasks={getTasksByDate(format(day, "yyyy-MM-dd")).length > 0}
+          hasTasks={useTaskStore.getState().getTasksByDate(format(day, "yyyy-MM-dd")).length > 0}
           onSelect={onSelectDate}
         />
       ))}

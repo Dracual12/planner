@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import { useTaskStore } from "@/store/taskStore";
@@ -14,8 +15,17 @@ interface TaskListProps {
 }
 
 export function TaskList({ selectedDate }: TaskListProps) {
-  const tasks = useTaskStore((s) => s.getTasksByDate(format(selectedDate, "yyyy-MM-dd")));
   const dateKey = format(selectedDate, "yyyy-MM-dd");
+  const [tasks, setTasks] = useState(() =>
+    useTaskStore.getState().getTasksByDate(dateKey)
+  );
+
+  useEffect(() => {
+    const update = () =>
+      setTasks(useTaskStore.getState().getTasksByDate(dateKey));
+    update();
+    return useTaskStore.subscribe(update);
+  }, [dateKey]);
 
   if (tasks.length === 0) {
     return (

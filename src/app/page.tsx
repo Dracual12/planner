@@ -38,7 +38,16 @@ export default function TodayPage() {
 
   const dateLabel = format(selectedDate, "EEEE, d MMMM", { locale: ru });
   const dateKey = format(selectedDate, "yyyy-MM-dd");
-  const tasks = useTaskStore((s) => s.getTasksByDate(dateKey));
+  const [tasks, setTasks] = useState(() =>
+    useTaskStore.getState().getTasksByDate(dateKey)
+  );
+
+  useEffect(() => {
+    const update = () =>
+      setTasks(useTaskStore.getState().getTasksByDate(dateKey));
+    update();
+    return useTaskStore.subscribe(update);
+  }, [dateKey]);
 
   return (
     <div className="flex flex-col gap-4">

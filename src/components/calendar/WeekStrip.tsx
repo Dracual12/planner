@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useReducer } from "react";
 import {
   addWeeks,
   subWeeks,
@@ -29,8 +29,11 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
     startOfWeek(selectedDate, { weekStartsOn: 1 })
   );
   const [direction, setDirection] = useState(0);
-  const tasks = useTaskStore((s) => s.tasks);
-  const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
+
+  useEffect(() => {
+    return useTaskStore.subscribe(forceUpdate);
+  }, []);
 
   const weekDays = getWeekDays(currentWeekStart);
 
@@ -84,7 +87,7 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
             const isSelected =
               startOfDay(selectedDate).getTime() === startOfDay(day).getTime();
             const today = isToday(day);
-            const hasTasks = getTasksByDate(format(day, "yyyy-MM-dd")).length > 0;
+            const hasTasks = useTaskStore.getState().getTasksByDate(format(day, "yyyy-MM-dd")).length > 0;
 
             return (
               <button
