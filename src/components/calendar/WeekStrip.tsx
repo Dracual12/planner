@@ -29,6 +29,7 @@ export function WeekStrip({ selectedDate, onSelectDate }: WeekStripProps) {
     startOfWeek(selectedDate, { weekStartsOn: 1 })
   );
   const [direction, setDirection] = useState(0);
+  const tasks = useTaskStore((s) => s.tasks);
   const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
 
   const weekDays = getWeekDays(currentWeekStart);
