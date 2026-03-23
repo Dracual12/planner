@@ -36,16 +36,20 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
     const container = scrollRef.current;
     if (!container) return;
 
-    // Disable smooth scrolling for initial positioning to prevent
-    // cascade: smooth scroll triggers handleScroll repeatedly,
-    // which keeps prepending days and scrolling further away.
     container.style.scrollBehavior = "auto";
     const todayIndex = BATCH_SIZE;
-    const cellWidth = 60;
-    const scrollPosition =
-      todayIndex * cellWidth - container.clientWidth / 2 + cellWidth / 2;
-    container.scrollLeft = scrollPosition;
-    // Re-enable smooth scrolling after positioning
+
+    // Measure real cell width instead of hardcoding
+    const firstCell = container.children[0] as HTMLElement | undefined;
+    if (firstCell) {
+      const cellRect = firstCell.getBoundingClientRect();
+      const gap = 4; // gap-1 = 0.25rem = 4px
+      const step = cellRect.width + gap;
+      const scrollPosition =
+        todayIndex * step - container.clientWidth / 2 + cellRect.width / 2;
+      container.scrollLeft = scrollPosition;
+    }
+
     requestAnimationFrame(() => {
       container.style.scrollBehavior = "";
     });
@@ -67,11 +71,15 @@ export function DayStrip({ selectedDate, onSelectDate }: DayStripProps) {
         BATCH_SIZE - 1
       );
 
+      // Measure real cell step before prepending
+      const firstCell = container.children[0] as HTMLElement | undefined;
+      const step = firstCell ? firstCell.getBoundingClientRect().width + 4 : 68;
+
       setDays((prev) => [...newDays, ...prev]);
 
       requestAnimationFrame(() => {
         if (container) {
-          container.scrollLeft += newDays.length * 60;
+          container.scrollLeft += newDays.length * step;
         }
         isLoadingRef.current = false;
       });

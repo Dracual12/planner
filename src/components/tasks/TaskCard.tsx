@@ -199,10 +199,10 @@ export function TaskCard({ task }: TaskCardProps) {
             )}
           </div>
 
-          {/* Delete button (desktop hover) */}
+          {/* Delete button (desktop hover only) */}
           <button
             onClick={() => deleteTask(task.id)}
-            className="flex-shrink-0 rounded-lg p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-[var(--priority-high)]/10"
+            className="flex-shrink-0 rounded-lg p-1 opacity-0 pointer-events-none transition-opacity group-hover:opacity-100 group-hover:pointer-events-auto hover:bg-[var(--priority-high)]/10"
           >
             <Trash2 size={14} className="text-[var(--text-muted)]" />
           </button>
