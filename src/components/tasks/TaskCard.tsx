@@ -1,12 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import {
-  motion,
-  useMotionValue,
-  useTransform,
-  type PanInfo,
-} from "framer-motion";
+import { useRef, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 import { Bell, Check, Clock, Repeat, Trash2 } from "lucide-react";
 import type { Task } from "@/types/task";
 import { PriorityBadge } from "./PriorityBadge";
@@ -25,7 +20,7 @@ const priorityBorderColor: Record<Task["priority"], string> = {
   low: "var(--priority-low)",
 };
 
-const DELETE_THRESHOLD = -100;
+const DELETE_THRESHOLD = 80;
 
 function haptic() {
   if (typeof navigator !== "undefined" && "vibrate" in navigator) {
@@ -36,47 +31,87 @@ function haptic() {
 export function TaskCard({ task }: TaskCardProps) {
   const toggleComplete = useTaskStore((s) => s.toggleComplete);
   const deleteTask = useTaskStore((s) => s.deleteTask);
+
+  const [offsetX, setOffsetX] = useState(0);
+  const [swiping, setSwiping] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const startX = useRef(0);
+  const startY = useRef(0);
+  const locked = useRef<"x" | "y" | null>(null);
 
-  const x = useMotionValue(0);
-  const deleteOpacity = useTransform(x, [-120, -60], [1, 0]);
-  const deleteScale = useTransform(x, [-120, -60], [1, 0.6]);
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    startY.current = e.touches[0].clientY;
+    locked.current = null;
+    setSwiping(false);
+  }, []);
 
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    if (info.offset.x < DELETE_THRESHOLD) {
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    const dx = e.touches[0].clientX - startX.current;
+    const dy = e.touches[0].clientY - startY.current;
+
+    // Lock direction on first significant move
+    if (!locked.current) {
+      if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+        locked.current = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      }
+      return;
+    }
+
+    if (locked.current === "y") return;
+
+    // Only allow swipe left
+    const clamped = Math.min(0, dx);
+    setOffsetX(clamped);
+    setSwiping(true);
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    if (offsetX < -DELETE_THRESHOLD) {
       haptic();
       setDismissed(true);
-      setTimeout(() => deleteTask(task.id), 300);
+      setTimeout(() => deleteTask(task.id), 250);
+    } else {
+      setOffsetX(0);
     }
-  };
+    setSwiping(false);
+    locked.current = null;
+  }, [offsetX, deleteTask, task.id]);
+
+  const progress = Math.min(Math.abs(offsetX) / DELETE_THRESHOLD, 1);
 
   return (
     <div className="relative overflow-hidden rounded-2xl">
       {/* Delete background */}
-      <motion.div
+      <div
         className="absolute inset-0 flex items-center justify-end rounded-2xl bg-[var(--priority-high)]/20 pr-5"
-        style={{ opacity: deleteOpacity }}
+        style={{ opacity: progress }}
       >
-        <motion.div style={{ scale: deleteScale }}>
-          <Trash2 size={20} className="text-[var(--priority-high)]" />
-        </motion.div>
-      </motion.div>
+        <Trash2
+          size={20}
+          className="text-[var(--priority-high)]"
+          style={{ transform: `scale(${0.6 + progress * 0.4})` }}
+        />
+      </div>
 
-      {/* Swipeable card */}
+      {/* Card */}
       <motion.div
-        layout
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={{ left: 0.4, right: 0 }}
-        dragDirectionLock
-        onDragEnd={handleDragEnd}
-        animate={dismissed ? { x: -400, opacity: 0 } : { x: 0 }}
-        transition={dismissed ? { duration: 0.25 } : undefined}
+        animate={
+          dismissed
+            ? { x: -400, opacity: 0 }
+            : swiping
+              ? undefined
+              : { x: 0 }
+        }
+        transition={dismissed ? { duration: 0.25 } : { type: "spring", stiffness: 400, damping: 30 }}
         className="glass group relative rounded-2xl p-3"
         style={{
-          x,
           borderLeft: `3px solid ${priorityBorderColor[task.priority]}`,
+          ...(swiping ? { transform: `translateX(${offsetX}px)` } : {}),
         }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         <div className="flex items-start gap-3">
           {/* Checkbox */}
@@ -123,7 +158,6 @@ export function TaskCard({ task }: TaskCardProps) {
               )}
             </div>
 
-            {/* Time slot */}
             {task.time && (
               <div className="mt-1 flex items-center gap-1">
                 <Clock size={11} className="text-[var(--text-secondary)]" />
@@ -134,21 +168,18 @@ export function TaskCard({ task }: TaskCardProps) {
               </div>
             )}
 
-            {/* Description */}
             {task.description && (
               <p className="mt-1 text-xs text-[var(--text-secondary)] line-clamp-2">
                 {task.description}
               </p>
             )}
 
-            {/* Subtask progress */}
             {task.subtasks.length > 0 && (
               <div className="mt-2">
                 <SubtaskProgress subtasks={task.subtasks} />
               </div>
             )}
 
-            {/* Tags */}
             {task.tags.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1">
                 {task.tags.map((tag) => (
